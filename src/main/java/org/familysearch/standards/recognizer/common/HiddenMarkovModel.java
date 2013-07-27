@@ -12,6 +12,12 @@ import org.familysearch.standards.recognizer.dataModel.CountsCollection;
 import org.familysearch.standards.recognizer.dataModel.UnigramCountsModel;
 import org.familysearch.standards.recognizer.common.LabeledToken;
 import org.familysearch.standards.recognizer.dataModel.SpacingModel;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.File;
+import java.io.Writer;
+import java.io.OutputStreamWriter;
+
 
 /**
  * @author BoiseBound
@@ -113,6 +119,61 @@ public class HiddenMarkovModel {
 	  if (!entered) { return (new ArrayList<String>()); }
 	  return ViterbiPath.get(bestStr);
 	}
+	/** 
+	 * 
+	 * @param taggedContents
+	 * @param outFile
+	 */
+	public void dumpContentsToFile(List<LabeledToken> taggedContents,String outFile) {
+	   Writer out =null;
+	   LabeledToken myToken;
+	   String leader;
+	   String fullEnamex;
+
+
+	   try {	 
+		  out = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(new File(outFile)), "UTF8"));
+		  for (int i=0;i<taggedContents.size();i++) {
+			myToken=taggedContents.get(i);  
+			if (myToken.getMain().equals(CountsCollection.ENDER)) {
+			  continue;
+			}
+			if (myToken.isNonSpace()) {
+			  leader="ENA";
+			  fullEnamex=myToken.getPositionedEnamex();
+			  if      (fullEnamex.matches("MONEY.*"))                                {leader="NU";}
+			  else if (fullEnamex.matches("DATE.*") || fullEnamex.matches("TIME.*")) {leader="TI";}
+			  else if (fullEnamex.equals(CountsCollection.ENDER))                    { continue;}
+			  if (fullEnamex.endsWith("-B") || fullEnamex.endsWith("-U")) { 
+				out.write("<"+leader+"MEX TYPE=\""+myToken.getEnamex()+"\">");
+			  }
+			  out.write(myToken.getMain());
+			  if (fullEnamex.endsWith("-E") || fullEnamex.endsWith("-U")) { 
+				out.write("</"+leader+"MEX>");
+			  } 
+			}
+			else {
+			  out.write(myToken.getMain());	
+			}
+		  }
+		} 
+		catch (Exception e) {
+		  System.out.println(e.getMessage());
+		}
+	   finally {
+		 if (out!=null) {
+			try {
+				out.flush();
+				out.close();					
+			}
+			catch (Exception e) {
+			  System.out.println(e.getMessage());
+			}
+		 }
+	   
+	   }
+	}
     /** 
      * 
      * @param parsedContents
@@ -122,21 +183,35 @@ public class HiddenMarkovModel {
 	  List<String> myPath=getBestViterbiPath();
 	  int i=0,j=0;
 	  String fullEnamex;
+	  String leader;
+	  StringBuffer outBuffer=new StringBuffer();
+	  LabeledToken myToken;
 	  while (i<myPath.size() && (startIndex+i+j<parsedContents.size())) {
 		if (parsedContents.get(i+j+startIndex).isNonSpace()) {
 		  fullEnamex=myPath.get(i);
 		  if (fullEnamex.equals(CountsCollection.ENDER+"-O")) {
 			break;
 		  }
+//		  leader="ENA";
 		  parsedContents.get(i+j+startIndex).setFullEnamex(fullEnamex);
-		  System.out.println("Becomes "+parsedContents.get(i+j+startIndex).toString());
-
+//		  if      (fullEnamex.matches("MONEY.*"))                                {leader="NU";}
+//		  else if (fullEnamex.matches("DATE.*") || fullEnamex.matches("TIME.*")) {leader="TI";}
+//		  if (fullEnamex.endsWith("-B") || fullEnamex.endsWith("-U")) { 
+//			outBuffer.append("<"+leader+"MEX TYPE=\""+myToken.getEnamex()+"\">");
+//		  }
+//		  outBuffer.append(myToken.getMain());
+//		  if (fullEnamex.endsWith("-E") || fullEnamex.endsWith("-U")) { 
+//			outBuffer.append("</"+leader+"MEX>");
+//		  }          
 		  i++;
 		}
 		else {
+//		  myToken=parsedContents.get(i+j+startIndex);
+//		  outBuffer.append(myToken.getMain());
 		  j++;
 		}
 	  }
+	  System.out.print(outBuffer.toString());
 	}
 	
 	public List<LabeledToken> decode(List<LabeledToken> parsedContents) {

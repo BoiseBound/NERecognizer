@@ -20,15 +20,24 @@ public class MultilingualTokenizer {
 	  private static final String  defaultMWUlist="resources/MWUList";
 	  
 	  public MultilingualTokenizer(String MWUlist) {
-		if (MWUlist==null) {
+		if (MWUlist==null || MWUlist.length()==0) {
 		  MWUlist=defaultMWUlist;
 		}
 		myMWUizer=new MWUizer(MWUlist);
 	  }
 	  
-	  public MultilingualTokenizer() {
-		this(null); 
+	  public MultilingualTokenizer(MWUizer myMWUizer) {
+		this.myMWUizer=myMWUizer;
 	  }
+	  
+	  public MultilingualTokenizer() {
+		this("");
+	  }
+	  
+	  public MWUizer getMWUizer() {
+		return this.myMWUizer;
+	  }
+ 	  
 	  
 	  /** 
 	   * 

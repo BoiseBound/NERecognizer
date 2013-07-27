@@ -16,6 +16,11 @@ import org.familysearch.standards.recognizer.common.Visibility;
 import org.familysearch.standards.recognizer.common.MultilingualTokenizer;
 
   public class TrainModel {
+	  MultilingualTokenizer myTokenizer;
+	  
+	  public TrainModel() {
+		  myTokenizer=new MultilingualTokenizer();
+	  }
 	  /** 
 	   * This inner enum class will be used for identifying which half of the data to train or test on
 	   * @author BoiseBound
@@ -42,7 +47,7 @@ import org.familysearch.standards.recognizer.common.MultilingualTokenizer;
 	    String line;
 	    BufferedReader inFile = null;
 	    int lineCount=0;
-	    MultilingualTokenizer myTokenizer=new MultilingualTokenizer();
+	    
         if (fileName==null) {
           return;
         }
@@ -56,6 +61,7 @@ import org.familysearch.standards.recognizer.common.MultilingualTokenizer;
 	    	  continue;
 	    	}
 	    	List<LabeledToken> parsedContents=myTokenizer.loadAndParse(line);
+	    	//System.out.println("parsedContents="+parsedContents);
 	    	myModel.addContentsToModel(parsedContents,visibleLevel,IdsVisible);
 	      }
 	    }

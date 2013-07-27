@@ -16,8 +16,10 @@ import org.familysearch.standards.recognizer.common.HiddenMarkovModel;
 
 public class NameRecognize {
 	  CountsCollection myModel;
+	  MultilingualTokenizer myTokenizer;
 	
 	  public NameRecognize(String modelFile) {
+		myTokenizer=new MultilingualTokenizer();
 		System.err.println("Trying to open "+modelFile);
 		myModel=new CountsCollection();
 		try {
@@ -41,7 +43,6 @@ public class NameRecognize {
 	  public void loadList(String fileName) {
 	    String line;
 	    BufferedReader inFile = null;
-	    MultilingualTokenizer myTokenizer=new MultilingualTokenizer();
 	    HiddenMarkovModel hmm=new HiddenMarkovModel(myModel);
 
 	    try {
@@ -52,8 +53,8 @@ public class NameRecognize {
 		    System.out.println("FILENAME="+line);
 
 	    	List<LabeledToken> parsedContents=myTokenizer.loadAndParse(line);
-	    	System.out.println("ParsedContents="+parsedContents.size());
 	    	List<LabeledToken> taggedContents=hmm.decode(parsedContents);
+	    	hmm.dumpContentsToFile(taggedContents,line+".autoEnamex");
 	    	//You can have two column format??
 	    	//Do you want to specify the params??
 	    	//Do you want to have eliminated classed in training / decoding?

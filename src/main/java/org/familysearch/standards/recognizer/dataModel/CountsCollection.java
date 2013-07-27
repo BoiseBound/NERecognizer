@@ -46,6 +46,8 @@ public class CountsCollection implements java.io.Serializable {
 	  public static final String MYSTERYLC="==unknown==";
 	  public static final double DISCOUNT=0.75;
 	  public static final int MAXLENGTHBETWEENBREAKS=1000;
+	  public static final int MAXACRONYM=4;
+
 	  
 	  public CountsCollection() {
 		UnigramTokenCounts=new UnigramCountsModel<String>();
@@ -131,7 +133,7 @@ public class CountsCollection implements java.io.Serializable {
 		 if (currentWord.equals(ENDER)) {
 		   return false;
 		 }
-		 if (currentWord.equals(".") && (!prevWord.matches("^\\p{IsUpper}.*") || prevWord.length()<=4)) {
+		 if (currentWord.equals(".") && (!prevWord.matches("^\\p{IsUpper}.*") && prevWord.length()>MAXACRONYM)) {
 		   return true;
 		 }
 		 if (nextSpace==null || nextSpace.hasNonIndentTabsOrMultipleCarriageReturns()) {
@@ -332,10 +334,10 @@ public class CountsCollection implements java.io.Serializable {
 		    if ( (lastEnamex.endsWith("-B") && (myEnamex.endsWith("-O") || myEnamex.endsWith("-U"))) ||
 			     (lastEnamex.endsWith("-I") && (myEnamex.endsWith("-O") || myEnamex.endsWith("-U") || myEnamex.endsWith("-B")))  
 			   ) {
-			   System.out.println("ERROR @ i="+i+" LAST="+lastPair.toString(null)+" TO="+myPair.toString(null));
+			   System.out.println("ERROR @ i="+i+":"+parsedContents.get(i)+" LAST="+lastPair.toString(null)+" TO="+myPair.toString(null));
 		    }
 		    if (lastEnamex.startsWith("NONE") && !lastEnamex.endsWith("-O")) {
-			  System.out.println("ERROR @ i="+i+" LAST="+lastPair.toString(null)+" TO="+myPair.toString(null));	  
+			  System.out.println("ERROR @ i="+i+":"+parsedContents.get(i)+" LAST="+lastPair.toString(null)+" TO="+myPair.toString(null));	  
 		    }
 		  }
 		  spacer=defaultSpacer;

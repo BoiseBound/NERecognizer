@@ -7,11 +7,17 @@ public class SpacingModel implements java.io.Serializable{
 	 */
    private static final long serialVersionUID = -783988398243843929L;
 	
-   String space;
+   String space;      // Compact representation for the space
+   String fullSpace;  // Non-compact representation of the space
    public SpacingModel() 
    { this(""); }
    public SpacingModel(String str) {
 	 this.space=compact(str);
+	 this.fullSpace=str;
+   }
+   
+   public String getFullSpace() {
+	  return fullSpace;
    }
    
    public static String compact(String str) {

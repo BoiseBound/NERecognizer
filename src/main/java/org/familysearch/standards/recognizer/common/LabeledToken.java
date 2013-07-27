@@ -2,6 +2,7 @@ package org.familysearch.standards.recognizer.common;
 
 public class LabeledToken {
 	//WORD    OffsetStartWithoutCountingEnamex	EnamexValue		SubEnamexType
+	static boolean skipSubtype=true;
     String      main;
     int         startOffset;
     String      enamexType;
@@ -68,8 +69,14 @@ public class LabeledToken {
      * This will SET the full ename
      */
     public void setFullEnamex(String name,String subtype,char position) {
-      enamexType=name;
-      subType   =subtype;
+      if (skipSubtype) {
+    	enamexType=name+"."+subType;
+    	subType=null;
+      }
+      else {
+        enamexType=name;
+        subType   =subtype;
+      }
       this.position=position;
     }
     /** 
@@ -79,6 +86,9 @@ public class LabeledToken {
        int lnth=fullname.length()-1;
       int indx1=fullname.indexOf(".");
       int indx2=fullname.indexOf("-");
+      if (skipSubtype) {
+    	indx1=-1;
+      }
       int indxE=indx1;
       if (indxE<0 || indxE>indx2) {
         indxE=indx2;
@@ -131,6 +141,9 @@ public class LabeledToken {
       main=token;
       startOffset=offset;
       int period=type.indexOf('.');
+      if (skipSubtype) {
+    	period=-1;
+      }
       if (period>=0) {
     	enamexType=type.substring(0,period);
     	subType=type.substring(period+1);
@@ -155,6 +168,9 @@ public class LabeledToken {
       String other="";
       if (subType!=null) {
     	other=delimiter+subType;
+      }
+      if (enamexType.equals("SP")) {
+    	return("("+main1+delimiter+startOffset+delimiter+enamexType+")");
       }
       return("("+main1+delimiter+startOffset+delimiter+enamexType+"-"+position+other+")");
     }
